@@ -31,4 +31,4 @@ WLFunction.__rtruediv__=WLSymbolFactory.__rtruediv__=lambda self,other:wl.Times(
 WLFunction.__sub__=WLSymbolFactory.__sub__=lambda self,other:wl.Plus(self,wl.Times(-1,other))
 WLFunction.__truediv__=WLSymbolFactory.__truediv__=lambda self,other:wl.Times(self,wl.Power(other,-1))
 section=WolframLanguageSession()
-WLFunction._repr_latex_=WLSymbolFactory._repr_latex_=lambda self:"$"+section.evaluate(wl.ToString(wl.Hold(self),wl.TeXForm))+"$"
+WLFunction._repr_latex_=WLSymbolFactory._repr_latex_=lambda self:"$"+section.evaluate(wl.ToString(self,wl.TeXForm))+"$"
