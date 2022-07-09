@@ -31,5 +31,12 @@ WLFunction.__rtruediv__=WLSymbolFactory.__rtruediv__=lambda self,other:wl.Times(
 WLFunction.__sub__=WLSymbolFactory.__sub__=lambda self,other:wl.Plus(self,wl.Times(-1,other))
 WLFunction.__truediv__=WLSymbolFactory.__truediv__=lambda self,other:wl.Times(self,wl.Power(other,-1))
 WLFunction.__getitem__=WLSymbolFactory.__getitem__=lambda*args:wl.Part(args[0],wl.Span(args[1].start if args[1].start!=None else wl.All,args[1].stop if args[1].stop!=None else wl.All,args[1].step if args[1].step!=None else wl.All) if type(args[1])==slice else args[1]) if type(args[1])!=tuple else wl.Part(args[0],*(wl.Span(i.start if i.start!=None else wl.All,i.stop if i.stop!=None else wl.All,i.step if i.step!=None else wl.All) if type(i)==slice else i for i in args[1]))
-section=WolframLanguageSession()
-WLFunction._repr_latex_=WLSymbolFactory._repr_latex_=lambda self:"$"+section.evaluate(wl.ToString(self,wl.TeXForm))+"$"
+from IPython import display,get_ipython
+if get_ipython()!=None:
+    section=WolframLanguageSession()
+    WLFunction._repr_latex_=WLSymbolFactory._repr_latex_=lambda self:"$"+section.evaluate(wl.ToString(self,wl.TeXForm))+"$"
+    def plot(expr,_type="SVG"):
+        """_type=["SVG","JPEG","PNG"]"""
+        if _type=="SVG":display.display_svg(section.evaluate(wl.ExportString(expr,_type)),raw=True)
+        elif _type=="JPEG":display.display_jpeg(section.evaluate(wl.ExportByteArray(expr,_type)),raw=True)
+        elif _type=="PNG":display.display_png(section.evaluate(wl.ExportByteArray(expr,_type)),raw=True)
