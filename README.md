@@ -6,5 +6,5 @@ Some changes for [wolframclient](https://github.com/WolframResearch/WolframClien
 3. Add expression.pyi for code completion
 
 **Usage:**
-Install [wolframclient](https://github.com/WolframResearch/WolframClientForPython).
+Install [wolframclient](https://github.com/WolframResearch/WolframClientForPython).  
 Then replace \_\_init\_\_.py with the \_\_init\_\_.py file in this repository.
