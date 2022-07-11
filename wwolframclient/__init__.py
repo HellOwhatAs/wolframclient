@@ -3,7 +3,7 @@ from wolframclient.language import wl,wlexpr
 from wolframclient.evaluation import WolframLanguageSession
 import IPython,IPython.display
 
-__all__ = ("wl", "wlexpr", "section", "wplot")
+__all__ = ("wl", "wlexpr", "session", "wplot")
 
 WLFunction.__add__=WLSymbolFactory.__add__=lambda*args:wl.Plus(*args)
 WLFunction.__eq__=WLSymbolFactory.__eq__=lambda*args:wl.Equal(*args)
@@ -28,21 +28,21 @@ WLFunction.__sub__=WLSymbolFactory.__sub__=lambda self,other:wl.Plus(self,wl.Tim
 WLFunction.__truediv__=WLSymbolFactory.__truediv__=lambda self,other:wl.Times(self,wl.Power(other,-1))
 WLFunction.__getitem__=WLSymbolFactory.__getitem__=lambda*args:wl.Part(args[0],wl.Span(args[1].start if args[1].start!=None else wl.All,args[1].stop if args[1].stop!=None else wl.All,args[1].step if args[1].step!=None else wl.All) if type(args[1])==slice else args[1]) if type(args[1])!=tuple else wl.Part(args[0],*(wl.Span(i.start if i.start!=None else wl.All,i.stop if i.stop!=None else wl.All,i.step if i.step!=None else wl.All) if type(i)==slice else i for i in args[1]))
 
-section=WolframLanguageSession()
+session=WolframLanguageSession()
 
 if IPython.get_ipython()!=None:
-    WLFunction._repr_latex_=WLSymbolFactory._repr_latex_=lambda self:"$"+section.evaluate(wl.ToString(self,wl.TeXForm))+"$"
+    WLFunction._repr_latex_=WLSymbolFactory._repr_latex_=lambda self:"$"+session.evaluate(wl.ToString(self,wl.TeXForm))+"$"
     def wplot(expr,_type="SVG"):
         """_type=["SVG","JPEG","PNG"]"""
-        if _type=="SVG":IPython.display.display_svg(section.evaluate(wl.ExportString(expr,_type)),raw=True)
-        elif _type=="JPEG":IPython.display.display_jpeg(section.evaluate(wl.ExportByteArray(expr,_type)),raw=True)
-        elif _type=="PNG":IPython.display.display_png(section.evaluate(wl.ExportByteArray(expr,_type)),raw=True)
+        if _type=="SVG":IPython.display.display_svg(session.evaluate(wl.ExportString(expr,_type)),raw=True)
+        elif _type=="JPEG":IPython.display.display_jpeg(session.evaluate(wl.ExportByteArray(expr,_type)),raw=True)
+        elif _type=="PNG":IPython.display.display_png(session.evaluate(wl.ExportByteArray(expr,_type)),raw=True)
 else:
     _plotted=0
     def wplot(expr):
         global _plotted
-        if not _plotted:section.evaluate(wlexpr("<< JavaGraphics`"))
-        section.evaluate(expr)
+        if not _plotted:session.evaluate(wlexpr("<< JavaGraphics`"))
+        session.evaluate(expr)
         _plotted=1
 
 if __name__=="__main__":
@@ -84,8 +84,8 @@ if __name__=="__main__":
             return _func(x.replace("\uf522","->"),1).replace("·","").replace("，",", ").replace("\\\\!\\(\\*\\",'"').replace("\\\\)\\ShowStringCharacters",'"').replace("\\)\\ShowStringCharacters",'"').replace("\\\\_","")
         with open(wolframclient.language.expression.__file__+"i","w",encoding="utf-8") as f:
             f.write("from typing import Any\nclass WLFunction:...\nclass WLSymbolFactory:\n")
-            for i in tqdm.tqdm(section.evaluate(wlexpr('Names["System`*"]//Select[PrintableASCIIQ[#] && ! StringMatchQ[#, "$" ~~ ___] &]'))):
+            for i in tqdm.tqdm(session.evaluate(wlexpr('Names["System`*"]//Select[PrintableASCIIQ[#] && ! StringMatchQ[#, "$" ~~ ___] &]'))):
                 if i!="True" and i!="False" and i!="None":
                     f.write("\tdef {}(*args: Any, **kwrags: Any):\n".format(i))
-                    f.write('\t\t"""'+func(usage:=str(section.evaluate(wlexpr('Information[{}, "Usage"]'.format(i)))).replace("\uf7c1","").replace("\uf7c9","").replace("\uf7c8","").replace("\uf7c0","")).replace("\n","\\n\n\t\t")+'"""\n\n')
-        section.stop()
+                    f.write('\t\t"""'+func(usage:=str(session.evaluate(wlexpr('Information[{}, "Usage"]'.format(i)))).replace("\uf7c1","").replace("\uf7c9","").replace("\uf7c8","").replace("\uf7c0","")).replace("\n","\\n\n\t\t")+'"""\n\n')
+        session.stop()
