@@ -14,10 +14,10 @@ pip install wwolframclient
 
 # Usage Example  
 ```python
-from wwolframclient import section,wplot,wl,wlexpr
+from wwolframclient import session,wplot,wl,wlexpr
 
 a,b,c,x=wl.a,wl.b,wl.c,wl.x
-solutions=section.evaluate(
+solutions=session.evaluate(
     wl.Solve(
         a*x**2+b*x+c==0,
         x
@@ -26,6 +26,6 @@ solutions=section.evaluate(
 for i,solution in enumerate(solutions):
     print("Solution",i)
     for var in solution:
-        print(section.evaluate(wl.ToString(var,wl.TeXForm)))
-section.terminate() # have to stop manually
+        print(session.evaluate(wl.ToString(var,wl.TeXForm)))
+session.terminate() # have to stop manually
 ```
